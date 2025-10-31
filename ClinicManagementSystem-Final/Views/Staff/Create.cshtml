@@ -1,0 +1,320 @@
+﻿@model ClinicManagementSystem_Final.Models.StaffViewModel
+
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+<div class="container mt-4">
+    <!-- Page Header -->
+    <div class="page-header text-center">
+        <h1 class="page-title">👤 New Staff Registration</h1>
+        <p class="page-subtitle">Add a new staff member to the clinic system</p>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            ✅ @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            ❌ @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>⚠️ Please correct the following errors:</strong>
+            <ul class="mb-0">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Registration Form -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">📝 Staff Information Form</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post" class="row g-3">
+                <!-- Staff Type Selection -->
+                <div class="col-md-12 mb-4">
+                    <label class="form-label fw-bold">👥 Staff Type</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="IsDoctor" id="asStaff" value="false" @(Model.IsDoctor ? "" : "checked") />
+                        <label class="form-check-label" for="asStaff">👨‍💼 Staff Member</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="IsDoctor" id="asDoctor" value="true" @(Model.IsDoctor ? "checked" : "") />
+                        <label class="form-check-label" for="asDoctor">👨‍⚕️ Doctor</label>
+                    </div>
+                </div>
+
+                <!-- Personal Information -->
+                <div class="col-md-6">
+                    <label asp-for="Staff.Name" class="form-label">👤 Full Name</label>
+                    <input asp-for="Staff.Name" class="form-control" placeholder="Enter full name" />
+                    <span asp-validation-for="Staff.Name" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Staff.Email" class="form-label">📧 Email Address</label>
+                    <input asp-for="Staff.Email" class="form-control" placeholder="Enter email address" />
+                    <span asp-validation-for="Staff.Email" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Staff.DOB" class="form-label">🎂 Date of Birth</label>
+                    <input asp-for="Staff.DOB" type="date" class="form-control" />
+                    <span asp-validation-for="Staff.DOB" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Staff.DOJ" class="form-label">📅 Date of Joining</label>
+                    <input asp-for="Staff.DOJ" type="date" class="form-control" />
+                    <span asp-validation-for="Staff.DOJ" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-12">
+                    <label asp-for="Staff.Address" class="form-label">🏠 Address</label>
+                    <input asp-for="Staff.Address" class="form-control" placeholder="Enter complete address" />
+                    <span asp-validation-for="Staff.Address" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Staff.Gender" class="form-label">⚥ Gender</label>
+                    <select asp-for="Staff.Gender" class="form-select">
+                        <option value="">Select Gender</option>
+                        <option value="Male">👨 Male</option>
+                        <option value="Female">👩 Female</option>
+                        <option value="Other">⚧ Other</option>
+                    </select>
+                    <span asp-validation-for="Staff.Gender" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Staff.Phone" class="form-label">📱 Phone Number</label>
+                    <input asp-for="Staff.Phone" class="form-control" maxlength="10" inputmode="numeric" pattern="[0-9]*" id="Staff_Phone" placeholder="Enter 10-digit phone number" />
+                    <span asp-validation-for="Staff.Phone" class="text-danger"></span>
+                </div>
+
+                <!-- Account Information -->
+                <div class="col-md-6">
+                    <label asp-for="Staff.Username" class="form-label">👤 Username</label>
+                    <input asp-for="Staff.Username" class="form-control" placeholder="Enter username" />
+                    <span asp-validation-for="Staff.Username" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Staff.Password" class="form-label">🔒 Password</label>
+                    <input asp-for="Staff.Password" type="password" class="form-control" placeholder="Enter password" />
+                    <span asp-validation-for="Staff.Password" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Staff.RoleId" class="form-label">🎭 Role</label>
+                    <select asp-for="Staff.RoleId" asp-items="@(new SelectList(Model.Roles, "RoleId", "RoleName"))" id="RoleIdDropdown" class="form-select"></select>
+                    <span asp-validation-for="Staff.RoleId" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Staff.Status" class="form-label">📊 Status</label>
+                    <select asp-for="Staff.Status" class="form-select">
+                        <option value="Active">✅ Active</option>
+                        <option value="Inactive">⏸️ Inactive</option>
+                        <option value="Disabled">❌ Disabled</option>
+                    </select>
+                    <span asp-validation-for="Staff.Status" class="text-danger"></span>
+                </div>
+
+                <!-- Doctor-specific fields -->
+                <div class="col-md-12" id="doctorFields" style="display:none;">
+                    <hr class="my-4">
+                    <h6 class="text-teal mb-3">👨‍⚕️ Doctor Information</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label asp-for="SelectedSpecializationId" class="form-label">🏥 Specialization</label>
+                            <select asp-for="SelectedSpecializationId" class="form-select" id="SelectedSpecializationId" asp-items="@(new SelectList(Model.Specializations, "SpecializationId", "Name"))">
+                                <option value="">-- Select Specialization --</option>
+                            </select>
+                            <span asp-validation-for="SelectedSpecializationId" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Fee" class="form-label">💰 Consultation Fee</label>
+                            <input asp-for="Fee" id="Fee" type="number" step="0.01" min="0" class="form-control" placeholder="Enter consultation fee" />
+                            <span asp-validation-for="Fee" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="col-12 mt-4">
+                    <div class="action-buttons">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            ✅ Create Staff Member
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary btn-lg">
+                            ↩️ Back to Staff List
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        (function ($) {
+            // format Date -> yyyy-MM-dd for input[type=date] max attribute
+            function toIsoDateString(d) {
+                var yyyy = d.getFullYear();
+                var mm = String(d.getMonth() + 1).padStart(2, '0');
+                var dd = String(d.getDate()).padStart(2, '0');
+                return yyyy + '-' + mm + '-' + dd;
+            }
+
+            $(function () {
+                var today = new Date();
+                var todayStr = toIsoDateString(today);
+
+                // DOB must be at least 18 years old => max DOB = today - 18 years
+                var minDobDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+                var minDobStr = toIsoDateString(minDobDate);
+
+                // Set HTML5 max attributes so browser date picker prevents invalid selection
+                $('#Staff_DOB').attr('max', minDobStr);
+                $('#Staff_DOJ').attr('max', todayStr);
+
+                // doctorRoleId rendered as string for safe comparison with select.value
+                var doctorRoleId = '@((Model.Roles.FirstOrDefault(r => r.RoleName.ToLower() == "doctor")?.RoleId ?? 2).ToString())';
+
+                function setFieldError(fieldKey, message) {
+                    var msgEl = $('[data-valmsg-for="' + fieldKey + '"]');
+                    msgEl.text(message).addClass('text-danger');
+                }
+
+                function clearFieldError(fieldKey) {
+                    var msgEl = $('[data-valmsg-for="' + fieldKey + '"]');
+                    msgEl.text('');
+                }
+
+                function validateDates() {
+                    var ok = true;
+                    clearFieldError('Staff.DOB');
+                    clearFieldError('Staff.DOJ');
+
+                    var dobVal = $('#Staff_DOB').val();
+                    if (dobVal) {
+                        var dob = new Date(dobVal);
+                        dob.setHours(0, 0, 0, 0);
+                        var todayN = new Date(); todayN.setHours(0, 0, 0, 0);
+
+                        if (dob > todayN) {
+                            setFieldError('Staff.DOB', 'Date of birth cannot be a future date.');
+                            ok = false;
+                        } else {
+                            var age = todayN.getFullYear() - dob.getFullYear();
+                            var m = todayN.getMonth() - dob.getMonth();
+                            if (m < 0 || (m === 0 && todayN.getDate() < dob.getDate())) age--;
+                            if (age < 18) {
+                                setFieldError('Staff.DOB', 'Staff must be at least 18 years old.');
+                                ok = false;
+                            }
+                        }
+                    }
+
+                    var dojVal = $('#Staff_DOJ').val();
+                    if (dojVal) {
+                        var doj = new Date(dojVal);
+                        doj.setHours(0, 0, 0, 0);
+                        var todayN2 = new Date(); todayN2.setHours(0, 0, 0, 0);
+                        if (doj > todayN2) {
+                            setFieldError('Staff.DOJ', 'Date of joining cannot be a future date.');
+                            ok = false;
+                        }
+                    }
+
+                    return ok;
+                }
+
+                function validatePhone() {
+                    clearFieldError('Staff.Phone');
+                    var ok = true;
+                    var raw = $('#Staff_Phone').val() || '';
+                    var digits = String(raw).replace(/\D/g, '');
+                    if (raw !== digits) $('#Staff_Phone').val(digits);
+                    if (digits.length > 10) {
+                        $('#Staff_Phone').val(digits.substring(0, 10));
+                        setFieldError('Staff.Phone', 'Phone number cannot exceed 10 digits.');
+                        ok = false;
+                    }
+                    return ok;
+                }
+
+                // NEW: show/hide doctor fields based on radio or role dropdown
+                function toggleDoctorFields() {
+                    var isDoctorRadio = $('input[name="IsDoctor"]:checked').val();
+                    var isDoctor = isDoctorRadio === 'true';
+                    var selectedRole = $('#RoleIdDropdown').val();
+
+                    if (isDoctor || selectedRole == doctorRoleId) {
+                        $('#doctorFields').show();
+                        $('#SelectedSpecializationId').attr('required', 'required');
+                        $('#Fee').attr('required', 'required');
+                        if (isDoctor) $('#RoleIdDropdown').val(doctorRoleId);
+                    } else {
+                        $('#doctorFields').hide();
+                        $('#SelectedSpecializationId').removeAttr('required');
+                        $('#Fee').removeAttr('required');
+                    }
+                }
+
+                // events
+                $('#Staff_DOB, #Staff_DOJ').on('change input', validateDates);
+                $('#Staff_Phone').on('input change', validatePhone);
+
+                // wire radio + role dropdown to toggle
+                $('input[name="IsDoctor"]').on('change', function () {
+                    toggleDoctorFields();
+                });
+                $('#RoleIdDropdown').on('change', function () {
+                    // reflect selection in the radio buttons
+                    if ($(this).val() == doctorRoleId) {
+                        $('#asDoctor').prop('checked', true);
+                    } else {
+                        $('#asStaff').prop('checked', true);
+                    }
+                    toggleDoctorFields();
+                });
+
+                // submit interceptor
+                $('form').on('submit', function (e) {
+                    var datesValid = validateDates();
+                    var phoneValid = validatePhone();
+                    if (!datesValid || !phoneValid) {
+                        e.preventDefault();
+                        var firstErr = $('.text-danger').filter(function () { return $(this).text().trim().length > 0; }).first();
+                        if (firstErr.length) $('html, body').animate({ scrollTop: firstErr.offset().top - 80 }, 200);
+                    }
+                });
+
+                // initial call to set correct visibility on page load
+                toggleDoctorFields();
+            });
+        })(jQuery);
+    </script>
+}

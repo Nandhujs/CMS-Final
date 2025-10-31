@@ -1,0 +1,31 @@
+﻿@model ClinicManagementSystem_Final.Models.Staff
+
+<div class="container mt-4">
+    <h2>Staff Details</h2>
+    <dl class="row">
+        <dt class="col-sm-2">Name</dt>
+        <dd class="col-sm-10">@Model.Name</dd>
+
+        <dt class="col-sm-2">Email</dt>
+        <dd class="col-sm-10">@Model.Email</dd>
+
+        <dt class="col-sm-2">Role</dt>
+        <dd class="col-sm-10">@Model.Role?.RoleName ?? "No Role"</dd>
+
+        <dt class="col-sm-2">Date of Birth</dt>
+        <dd class="col-sm-10">@Model.DOB.ToString("yyyy-MM-dd")</dd>
+
+        <dt class="col-sm-2">Date of Joining</dt>
+        <dd class="col-sm-10">@Model.DOJ.ToString("yyyy-MM-dd")</dd>
+
+        <dt class="col-sm-2">Status</dt>
+        <dd class="col-sm-10">@Model.Status</dd>
+
+        <dt class="col-sm-2">Phone</dt>
+        <dd class="col-sm-10">@Model.Phone</dd>
+
+        <!-- Additional fields as needed -->
+    </dl>
+
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>

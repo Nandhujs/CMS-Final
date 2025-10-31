@@ -1,0 +1,183 @@
+﻿@model IEnumerable<ClinicManagementSystem_Final.Models.Patient>
+
+@{
+    ViewData["Title"] = "Patients";
+    var mmrNo = Context.Request.Query["mmrNo"].ToString();
+    var phone = Context.Request.Query["phone"].ToString();
+    var genderList = new List<string> { "Male", "Female", "Other" };
+}
+<div class="mb-3">
+    <a href="@Url.Action("Index", "Receptionist")" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Dashboard
+    </a>
+</div>
+
+<h2 class="mb-4 text-center">Patients List</h2>
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <!-- Search form -->
+    <form method="get" asp-action="Patients" asp-controller="Receptionist" class="d-flex gap-2 flex-wrap">
+        <input type="text" name="mmrNo" class="form-control" placeholder="Search by MMR No" value="@mmrNo" />
+        <input type="text" name="phone" class="form-control" placeholder="Search by Phone" value="@phone" />
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <!-- Add Patient Button -->
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPatientModal">
+        <i class="bi bi-person-plus"></i> Add New Patient
+    </button>
+</div>
+
+<!-- Add Patient Modal -->
+<div class="modal fade" id="addPatientModal" tabindex="-1" aria-labelledby="addPatientModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="AddPatient" asp-controller="Receptionist" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addPatientModalLabel">Add New Patient</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" name="PatientName" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Gender</label>
+                        @Html.DropDownList("Gender", new SelectList(genderList), "-- Select Gender --", new { @class = "form-select", required = "required" })
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date of Birth</label>
+                        <input type="date" name="DOB" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="text" name="ContactNumber" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <textarea name="Address" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Blood Group</label>
+                        <input type="text" name="BloodGroup" class="form-control" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add Patient</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-light text-center">
+        <tr>
+            <th>MMR No</th>
+            <th>Name</th>
+            <th>Gender</th>
+            <th>DOB</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Blood Group</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var patient in Model)
+            {
+                <tr>
+                    <td>@patient.MMRNo</td>
+                    <td>@patient.PatientName</td>
+                    <td>@patient.Gender</td>
+                    <td>@(patient.DOB != DateTime.MinValue ? patient.DOB.ToString("dd/MM/yyyy") : "")</td>
+                    <td>@patient.ContactNumber</td>
+                    <td>@patient.Address</td>
+                    <td>@patient.BloodGroup</td>
+                    <td>
+                        <span class="badge @(patient.Status == "Active" ? "bg-success" : "bg-secondary")">@patient.Status</span>
+                    </td>
+                    <td class="text-center">
+                        <!-- Edit Patient Button -->
+                        <button class="btn btn-sm btn-warning mb-1" data-bs-toggle="modal" data-bs-target="#editPatientModal_@patient.PatientId">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </button>
+
+                        <!-- Delete Patient Form -->
+                        <form asp-action="DeletePatient" asp-controller="Receptionist" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@patient.PatientId" />
+                            <button type="submit" class="btn btn-sm btn-danger mb-1" onclick="return confirm('Are you sure you want to delete this patient?');">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </form>
+
+                        <!-- Edit Patient Modal -->
+                        <div class="modal fade" id="editPatientModal_@patient.PatientId" tabindex="-1" aria-labelledby="editPatientModalLabel_@patient.PatientId" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form asp-action="EditPatient" asp-controller="Receptionist" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="PatientId" value="@patient.PatientId" />
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editPatientModalLabel_@patient.PatientId">Edit Patient</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">MMR No</label>
+                                                <input type="text" name="MMRNo" class="form-control" value="@patient.MMRNo" readonly />
+                                                <small class="text-muted">MMR No is auto-generated and cannot be changed</small>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Name</label>
+                                                <input type="text" name="PatientName" class="form-control" value="@patient.PatientName" required />
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Gender</label>
+                                                @Html.DropDownList("Gender", new SelectList(genderList, patient.Gender), "-- Select Gender --", new { @class = "form-select", required = "required" })
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Date of Birth</label>
+                                                <input type="date" name="DOB" class="form-control" value="@(patient.DOB.ToString("yyyy-MM-dd"))" required />
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Phone</label>
+                                                <input type="text" name="ContactNumber" class="form-control" value="@patient.ContactNumber" required />
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Address</label>
+                                                <textarea name="Address" class="form-control" rows="2">@patient.Address</textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Blood Group</label>
+                                                <input type="text" name="BloodGroup" class="form-control" value="@patient.BloodGroup" />
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Update Patient</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="9" class="text-center text-muted">No patients found.</td>
+            </tr>
+        }
+    </tbody>
+</table>

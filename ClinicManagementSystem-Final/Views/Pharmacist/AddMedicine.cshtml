@@ -1,0 +1,55 @@
+@model ClinicManagementSystem_Final.Models.MedicineViewModel
+@{
+    ViewData["Title"] = "Add Medicine";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h3 class="card-title mb-0">Add New Medicine</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="AddMedicine" method="post">
+                        <div class="mb-3">
+                            <label asp-for="MedicineName" class="form-label">Medicine Name *</label>
+                            <input asp-for="MedicineName" class="form-control" required />
+                            <span asp-validation-for="MedicineName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="MedicineDescription" class="form-label">Description *</label>
+                            <textarea asp-for="MedicineDescription" class="form-control" rows="3" required></textarea>
+                            <span asp-validation-for="MedicineDescription" class="text-danger"></span>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Quantity" class="form-label">Quantity *</label>
+                                <input asp-for="Quantity" class="form-control" type="number" required />
+                                <span asp-validation-for="Quantity" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Price" class="form-label">Price *</label>
+                                <input asp-for="Price" class="form-control" type="number" step="0.01" required />
+                                <span asp-validation-for="Price" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-success">Add Medicine</button>
+                            <a href="@Url.Action("Medicines")" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

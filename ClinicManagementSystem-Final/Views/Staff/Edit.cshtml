@@ -1,0 +1,120 @@
+﻿@model StaffViewModel
+
+<form asp-action="Edit" method="post" class="container mt-4">
+    <h2>Edit Staff</h2>
+
+    <input type="hidden" asp-for="Staff.StaffId" />
+
+    <div class="form-group">
+        <label asp-for="Staff.Name"></label>
+        <input asp-for="Staff.Name" class="form-control" />
+        <span asp-validation-for="Staff.Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Staff.Email"></label>
+        <input asp-for="Staff.Email" class="form-control" />
+        <span asp-validation-for="Staff.Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Staff.DOB"></label>
+        <input asp-for="Staff.DOB" type="date" class="form-control" />
+        <span asp-validation-for="Staff.DOB" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Staff.DOJ"></label>
+        <input asp-for="Staff.DOJ" type="date" class="form-control" />
+        <span asp-validation-for="Staff.DOJ" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Staff.Address"></label>
+        <input asp-for="Staff.Address" class="form-control" />
+        <span asp-validation-for="Staff.Address" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Staff.Gender"></label>
+        <select asp-for="Staff.Gender" class="form-control">
+            <option value="">Select Gender</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+        </select>
+        <span asp-validation-for="Staff.Gender" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Staff.Phone"></label>
+        <input asp-for="Staff.Phone" class="form-control" />
+        <span asp-validation-for="Staff.Phone" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Staff.Username"></label>
+        <input asp-for="Staff.Username" class="form-control" />
+        <span asp-validation-for="Staff.Username" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Staff.Password"></label>
+        <input asp-for="Staff.Password" type="password" class="form-control" />
+        <span asp-validation-for="Staff.Password" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Staff.RoleId"></label>
+        <select asp-for="Staff.RoleId" asp-items="@(new SelectList(Model.Roles, "RoleId", "RoleName"))" id="RoleIdDropdown" class="form-control"></select>
+        <span asp-validation-for="Staff.RoleId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Staff.Status">Status</label>
+        <select asp-for="Staff.Status" class="form-control">
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+            <option value="Disabled">Disabled</option>
+        </select>
+        <span asp-validation-for="Staff.Status" class="text-danger"></span>
+    </div>
+
+    <div id="doctorFields" style="display:none;">
+        <div class="form-group">
+            <label asp-for="SelectedSpecializationId">Specialization</label>
+            <select asp-for="SelectedSpecializationId" class="form-control" asp-items="@(new SelectList(Model.Specializations, "SpecializationId", "Name"))">
+                <option value="">-- Select Specialization --</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Fee">Consultation Fee</label>
+            <input asp-for="Fee" type="number" step="0.01" class="form-control" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a asp-action="Index" class="btn btn-secondary px-4 ms-2">Back</a>
+</form>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function toggleDoctorFields() {
+            var selectedRoleId = $('#RoleIdDropdown').val();
+            var doctorRoleId = '@Model.Roles.FirstOrDefault(r => r.RoleName.ToLower() == "doctor")?.RoleId ?? 2';
+
+            if (selectedRoleId == doctorRoleId) {
+                $('#doctorFields').show();
+            } else {
+                $('#doctorFields').hide();
+            }
+        }
+
+        $(document).ready(function () {
+            toggleDoctorFields();
+            $('#RoleIdDropdown').change(toggleDoctorFields);
+        });
+    </script>
+}

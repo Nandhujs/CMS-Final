@@ -1,0 +1,118 @@
+﻿@model IEnumerable<ClinicManagementSystem_Final.Models.DoctorDashboardViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<style>
+    /* Doctor page styles (kept local to view) */
+    .doctor-page {
+        background: #f5f7fa;
+        padding: 20px;
+        border-radius: 8px;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, var(--teal-primary) 0%, var(--teal-dark) 100%);
+        color: white;
+        padding: 30px 20px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .page-title {
+        color: white !important;
+        font-size: 2.2rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .page-subtitle {
+        color: rgba(255, 255, 255, 0.9) !important;
+        font-size: 1.1rem;
+        margin-bottom: 0;
+        font-weight: 400;
+    }
+
+    .doctor-table {
+        background: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+    }
+
+    .doctor-table thead th {
+        background: #eef3f7;
+        border-bottom: 1px solid rgba(0,0,0,0.04);
+        font-weight: 600;
+    }
+
+    .doctor-table tbody tr:hover {
+        background: #fbfdff;
+    }
+
+    .btn-doctor {
+        transition: transform .08s ease, box-shadow .12s ease, opacity .12s ease;
+        will-change: transform;
+    }
+    .btn-doctor:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(16,24,40,0.08);
+    }
+    .btn-doctor:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 8px rgba(16,24,40,0.10);
+    }
+
+    .btn-sm.btn-doctor {
+        padding: .25rem .5rem;
+    }
+
+    /* Small responsive tweak */
+    @@media (max-width: 576px) {
+        .doctor-page { padding: 12px; }
+    }
+</style>
+
+<div class="doctor-page">
+    <div class="page-header text-center">
+        <h1 class="page-title">📅 Today's Appointments</h1>
+        <p class="page-subtitle">Manage your daily patient appointments</p>
+    </div>
+
+    <div class="doctor-table">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Token</th>
+                    <th>Appointment Date</th>
+                    <th>Status</th>
+                    <th>MMR No</th>
+                    <th>Patient</th>
+                    <th>Gender</th>
+                    <th>Age</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model) {
+                <tr>
+                    <td>@item.TokenNumber</td>
+                    <td>@item.AppointmentDate.ToString("g")</td>
+                    <td>@item.Status</td>
+                    <td>@item.MMRNo</td>
+                    <td>@item.PatientName</td>
+                    <td>@item.Gender</td>
+                    <td>@(item.Age?.ToString() ?? "-")</td>
+                    <td>
+                        <a asp-action="Consult" asp-route-appointmentId="@item.AppointmentId" class="btn btn-sm btn-primary btn-doctor">Start Consultation</a>
+                        <a asp-action="PatientDetails" asp-route-mmr="@item.MMRNo" class="btn btn-sm btn-outline-secondary btn-doctor ms-1">View History</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

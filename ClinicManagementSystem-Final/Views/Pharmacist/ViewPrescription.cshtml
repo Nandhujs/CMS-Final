@@ -1,0 +1,77 @@
+@model ClinicManagementSystem_Final.Models.Prescription
+@{
+    ViewData["Title"] = "Prescription Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">Prescription Details</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p><strong>Patient Name:</strong> @Model.PatientName</p>
+                            <p><strong>MMR:</strong> @Model.MMRNo</p>
+                            <p><strong>Date:</strong> @Model.ConsultationDate.ToShortDateString()</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Doctor:</strong> @Model.DoctorName</p>
+                            <p><strong>Diagnosis:</strong> @Model.Diagnosis</p>
+                            <p><strong>Status:</strong> <span class="badge bg-warning">@Model.Status</span></p>
+                        </div>
+                    </div>
+
+                    <h5 class="mb-3">Prescribed Medicines</h5>
+                    @if (Model.Medicines != null && Model.Medicines.Any())
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Medicine Name</th>
+                                    <th>Dosage</th>
+                                    <th>Duration</th>
+                                    <th>Frequency</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var medicine in Model.Medicines)
+                                {
+                                    <tr>
+                                        <td>@medicine.MedicineName</td>
+                                        <td>@medicine.Dosage</td>
+                                        <td>@medicine.Duration</td>
+                                        <td>@medicine.Frequency</td>
+                                        <td>@medicine.Quantity</td>
+                                        <td>@medicine.Price.ToString("C")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <div class="text-end">
+                            <a href="@Url.Action("PendingPrescriptions")" class="btn btn-secondary">Back</a>
+                            <form asp-action="DispensePrescription" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="prescriptionId" value="@Model.PrescriptionId" />
+                                <button type="submit" class="btn btn-success">Dispense</button>
+                            </form>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">No medicines prescribed.</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

@@ -1,0 +1,52 @@
+@model ClinicManagementSystem_Final.Models.PatientSearchViewModel
+@{
+    ViewData["Title"] = "Search Patient";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">Search Patient</h3>
+                </div>
+                <div class="card-body">
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="SearchPatient" method="post">
+                        <div class="mb-3">
+                            <label asp-for="SearchTerm" class="form-label">Search Term</label>
+                            <input asp-for="SearchTerm" class="form-control" placeholder="Enter MMR number or patient name" required />
+                            <span asp-validation-for="SearchTerm" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="SearchType" class="form-label">Search By</label>
+                            <select asp-for="SearchType" class="form-select" required>
+                                <option value="">Select...</option>
+                                <option value="MMR">MMR Number</option>
+                                <option value="Name">Patient Name</option>
+                            </select>
+                            <span asp-validation-for="SearchType" class="text-danger"></span>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Search Patient</button>
+                        <a href="@Url.Action("Dashboard")" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+

@@ -1,0 +1,115 @@
+﻿@model IEnumerable<ClinicManagementSystem_Final.Models.AppointmentViewModel>
+
+@{
+    ViewData["Title"] = "Today's Appointments";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Today's Appointments</h2>
+
+    <div class="mb-3">
+        <a href="@Url.Action("Index", "Receptionist")" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Dashboard
+        </a>
+    </div>
+
+    <!-- Success / Error Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <!-- Book Appointment Button -->
+    <div class="text-end mb-3">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bookAppointmentModal">
+            Book New Appointment
+        </button>
+    </div>
+
+    <!-- Appointment List Table -->
+    <table class="table table-bordered table-striped text-center">
+        <thead class="table-dark">
+            <tr>
+                <th>Token</th>
+                <th>Patient Name</th>
+                <th>Doctor Name</th>
+                <th>Appointment Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var appointment in Model)
+                {
+                    <tr>
+                        <td>@appointment.TokenNumber</td>
+                        <td>@appointment.PatientName</td>
+                        <td>@appointment.DoctorName</td>
+                        <td>@appointment.AppointmentDate.ToString("dd/MM/yyyy hh:mm tt")</td>
+                        <td>@appointment.Status</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-muted">No appointments scheduled for today.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Book Appointment Modal -->
+<div class="modal fade" id="bookAppointmentModal" tabindex="-1" aria-labelledby="bookAppointmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="BookAppointment" asp-controller="Receptionist" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="bookAppointmentModalLabel">Book New Appointment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Select Patient</label>
+                        @Html.DropDownList("patientId",
+                        new SelectList(ViewBag.Patients, "PatientId", "PatientName"),
+                                                "-- Select Patient --",
+                                                new { @class = "form-select", required = "required" })
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Select Doctor</label>
+                        <select name="doctorId" class="form-select" required>
+                            <option value="">-- Select Doctor --</option>
+                            @foreach (var doctor in ViewBag.Doctors)
+                            {
+                                <option value="@doctor.DoctorId">
+                                    @doctor.DoctorName - @(doctor.Specialization?.Name ?? "General")
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Appointment Date & Time</label>
+                        <input type="datetime-local" name="appointmentDate" class="form-control" required />
+                        <small class="text-muted">* Appointments must be in 15-minute intervals.</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Book Appointment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,80 @@
+@model IEnumerable<ClinicManagementSystem_Final.Models.Prescription>
+@{
+    ViewData["Title"] = "Pending Prescriptions";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h3 class="card-title mb-0">Pending Prescriptions</h3>
+                </div>
+                <div class="card-body">
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @if (Model != null && Model.Any())
+                    {
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Patient Name</th>
+                                    <th>MMR</th>
+                                    <th>Doctor</th>
+                                    <th>Diagnosis</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var prescription in Model)
+                                {
+                                    <tr>
+                                        <td>@prescription.PatientName</td>
+                                        <td>@prescription.MMRNo</td>
+                                        <td>@prescription.DoctorName</td>
+                                        <td>@prescription.Diagnosis</td>
+                                        <td>@prescription.ConsultationDate.ToShortDateString()</td>
+                                        <td>
+                                            <span class="badge bg-warning">@prescription.Status</span>
+                                        </td>
+                                        <td>
+                                            <a href="@Url.Action("ViewPrescription", new { id = prescription.PrescriptionId })" class="btn btn-sm btn-info">View</a>
+                                            <form asp-action="DispensePrescription" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="prescriptionId" value="@prescription.PrescriptionId" />
+                                                <button type="submit" class="btn btn-sm btn-success">Dispense</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">No pending prescriptions found.</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

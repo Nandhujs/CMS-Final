@@ -1,0 +1,105 @@
+﻿@model IEnumerable<ClinicManagementSystem_Final.Models.Staff>
+
+@{
+    ViewData["Title"] = "Staff Management";
+}
+
+<div class="container mt-4">
+    <!-- Page Header -->
+    <div class="page-header text-center">
+        <h1 class="page-title">👥 Staff Management</h1>
+        <p class="page-subtitle">Manage clinic staff members and their information</p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <a asp-action="Create" class="btn btn-primary">
+            ➕ Create New Staff
+        </a>
+        <a asp-action="Search" class="btn btn-info">
+            🔍 Search by ID
+        </a>
+        <a asp-action="SearchByMobile" class="btn btn-info">
+            📱 Search by Mobile
+        </a>
+    </div>
+
+    <!-- Staff Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">📋 Staff Directory</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Date of Birth</th>
+                            <th>Date of Joining</th>
+                            <th>Address</th>
+                            <th>Gender</th>
+                            <th>Phone</th>
+                            <th>Role</th>
+                            <th>Username</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><strong>@item.StaffId</strong></td>
+                                <td>@item.Name</td>
+                                <td>@item.Email</td>
+                                <td>@item.DOB.ToString("yyyy-MM-dd")</td>
+                                <td>@item.DOJ.ToString("yyyy-MM-dd")</td>
+                                <td>@item.Address</td>
+                                <td>@item.Gender</td>
+                                <td>@item.Phone</td>
+                                <td><span class="badge badge-info">@item.Role?.RoleName</span></td>
+                                <td>@item.Username</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.Status))
+                                    {
+                                        @if (item.Status.ToLower() == "active")
+                                        {
+                                            <span class="badge badge-success">✅ @item.Status</span>
+                                        }
+                                        else if (item.Status.ToLower() == "inactive")
+                                        {
+                                            <span class="badge badge-warning">⏸️ @item.Status</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-danger">❌ @item.Status</span>
+                                        }
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Edit" asp-route-id="@item.StaffId" class="btn btn-sm btn-info" title="Edit Staff">
+                                            ✏️ Edit
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.StaffId" class="btn btn-sm btn-secondary" title="View Details">
+                                            👁️ Details
+                                        </a>
+                                        <form asp-action="Disable" method="post" style="display:inline">
+                                            <input type="hidden" name="id" value="@item.StaffId" />
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to disable this staff member?')" title="Disable Staff">
+                                                🗑️ Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

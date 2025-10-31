@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "Receptionist Dashboard";
+}
+
+<h1 class="text-center my-4">Receptionist Dashboard</h1>
+
+<div class="container">
+    <div class="row text-center g-4">
+
+        <!-- Patients Section -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Manage Patients</h5>
+                    <p class="card-text">Manage  patients.</p>
+                    <a href="@Url.Action("Patients", "Receptionist")" class="btn btn-primary">View Patients</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Appointments Section -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Today's Appointments</h5>
+                    <p class="card-text">See all scheduled appointments for today.</p>
+                    <a href="@Url.Action("TodayAppointments", "Receptionist")" class="btn btn-success">View Appointments</a>
+                </div>
+            </div>
+        </div>
+
+        
+
+    </div>
+</div>
+

@@ -1,0 +1,77 @@
+@model ClinicManagementSystem_Final.Models.LabResultViewModel
+@{
+    ViewData["Title"] = "Enter Lab Results";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h3 class="card-title mb-0">Enter Lab Test Results</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-controller="Lab" asp-action="UpdateTestResult" method="post">
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.ResultId)
+                        @Html.HiddenFor(m => m.TestId)
+                        @Html.HiddenFor(m => m.PatientId)
+                        @Html.HiddenFor(m => m.TestName)
+                        @Html.HiddenFor(m => m.PatientName)
+                        @Html.HiddenFor(m => m.MMRNo)
+                        @Html.HiddenFor(m => m.NormalRange)
+                        @Html.HiddenFor(m => m.SampleType)
+                        @Html.HiddenFor(m => m.Gender)
+                        @Html.HiddenFor(m => m.Age)
+                        @Html.HiddenFor(m => m.Date)
+                        @Html.HiddenFor(m => m.LowRange)
+                        @Html.HiddenFor(m => m.HighRange)
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Patient:</strong> @Model.PatientName (@Model.MMRNo)
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Test:</strong> @Model.TestName
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Normal Range:</label>
+                            <input type="text" class="form-control" value="@Model.NormalRange" readonly />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ActualValue" class="form-label">Actual Value *</label>
+                            <input asp-for="ActualValue" class="form-control" step="0.01" required />
+                            <small class="form-text text-muted">Enter the test result value</small>
+                            <span asp-validation-for="ActualValue" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Remarks" class="form-label">Remarks</label>
+                            <textarea asp-for="Remarks" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-success">Save Results</button>
+                            <a href="@Url.Action("Dashboard")" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            console.log('Form submitting...');
+            var actualValue = document.querySelector('[name="ActualValue"]').value;
+            console.log('Actual Value:', actualValue);
+        });
+    </script>
+}

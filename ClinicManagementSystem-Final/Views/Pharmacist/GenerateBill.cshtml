@@ -1,0 +1,173 @@
+@model ClinicManagementSystem_Final.Models.PrescriptionViewModel
+@{
+    ViewData["Title"] = "Generate Bill";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    @@media print {
+        .no-print { display: none !important; }
+        .print-only { display: block !important; }
+        body { font-size: 12px; }
+        .card { border: none !important; box-shadow: none !important; }
+        .card-header { background-color: #28a745 !important; -webkit-print-color-adjust: exact; }
+    }
+    .print-only { display: none; }
+    .total-amount { color: #dc3545; font-weight: bold; font-size: 1.2em; }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="card shadow-sm" id="billContent">
+                <div class="card-header bg-success text-white">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h3 class="card-title mb-0">Clinic Management System - Pharmacy Bill</h3>
+                        </div>
+                        <div class="col-md-4 text-right">
+                            <h5 class="mb-0">BILL NO: PH-@DateTime.Now.ToString("yyyyMMddHHmmss")</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Success Message -->
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show no-print">
+                            @TempData["SuccessMessage"]
+                            <button type="button" class="close" data-dismiss="alert">
+                                <span>&times;</span>
+                            </button>
+                        </div>
+                    }
+
+                    <div class="text-center mb-4">
+                        <h4>Clinic Management System</h4>
+                        <p><strong>Medicine Bill</strong></p>
+                        <hr>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p><strong>Patient Name:</strong> @Model.PatientName</p>
+                            <p><strong>MMR No:</strong> @Model.MMRNo</p>
+                            <p><strong>Date:</strong> @Model.ConsultationDate.ToString("dd-MM-yyyy")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Doctor:</strong> @Model.DoctorName</p>
+                            <p><strong>Prescription ID:</strong> @Model.PrescriptionId</p>
+                            <p><strong>Bill Date:</strong> @DateTime.Now.ToString("dd-MM-yyyy")</p>
+                        </div>
+                    </div>
+
+                    <h5 class="mb-3"><strong>Medicine Details</strong></h5>
+                    @if (Model.Medicines != null && Model.Medicines.Any())
+                    {
+                        <table class="table table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Medicine Name</th>
+                                    <th>Quantity</th>
+                                    <th>Unit Price</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ int serialNumber = 1; }
+                                @foreach (var medicine in Model.Medicines)
+                                {
+                                    <tr>
+                                        <td>@serialNumber</td>
+                                        <td>@medicine.MedicineName</td>
+                                        <td>@medicine.Quantity</td>
+                                        <td>₹@medicine.Price.ToString("F2")</td>
+                                        <td>₹@medicine.SubTotal.ToString("F2")</td>
+                                    </tr>
+                                    serialNumber++;
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-warning">
+                                    <th colspan="4" class="text-end"><strong>TOTAL AMOUNT:</strong></th>
+                                    <th class="total-amount">₹@Model.TotalAmount.ToString("F2")</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            <strong>No medicines found in this prescription.</strong>
+                        </div>
+                    }
+
+                    <div class="mt-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Thank you for choosing our pharmacy!</strong></p>
+                                <p>For any queries, please contact: +91-XXXXXXXXXX</p>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <p><strong>Pharmacist Signature:</strong> _________________</p>
+                                <p><strong>Date:</strong> @DateTime.Now.ToString("dd-MM-yyyy")</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4 no-print">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-danger btn-lg" onclick="printBill()">
+                                <i class="fas fa-print"></i> Print Bill
+                            </button>
+                            <button type="button" class="btn btn-primary btn-lg" onclick="downloadPDF()">
+                                <i class="fas fa-download"></i> Download PDF
+                            </button>
+                            <form asp-action="MarkBillPrinted" method="post" style="display: inline;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="prescriptionId" value="@Model.PrescriptionId" />
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="fas fa-check"></i> Mark as Printed
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+    function printBill() {
+        window.print();
+    }
+    
+    function downloadPDF() {
+        const element = document.getElementById('billContent');
+        const opt = {
+            margin: 1,
+            filename: 'Medicine_Bill_' + '@Model.PrescriptionId' + '.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        
+        html2pdf().set(opt).from(element).save();
+    }
+    
+    // Auto-trigger PDF download if coming from DownloadBillPDF action
+    @if (TempData["PrintBill"] != null)
+    {
+        <text>
+        document.addEventListener('DOMContentLoaded', function() {
+            downloadPDF();
+        });
+        </text>
+    }
+</script>
+
+

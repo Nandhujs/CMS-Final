@@ -1,0 +1,69 @@
+@model List<ClinicManagementSystem_Final.Models.LabResultViewModel>
+@{
+    ViewData["Title"] = "Patient Lab Tests";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h3 class="card-title mb-0">Pending Lab Tests</h3>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.Patient != null)
+                    {
+                        <div class="patient-info mb-4 p-3 bg-light rounded">
+                            <h5>Patient Information</h5>
+                            <p><strong>Name:</strong> @ViewBag.Patient.Name | <strong>MMR:</strong> @ViewBag.Patient.MMRNo | <strong>Gender:</strong> @ViewBag.Patient.Gender | <strong>Age:</strong> @ViewBag.Patient.Age</p>
+                        </div>
+                    }
+
+                    @if (Model != null && Model.Any())
+                    {
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Test Name</th>
+                                    <th>Normal Range</th>
+                                    <th>Sample Type</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var test in Model)
+                                {
+                                    <tr>
+                                        <td>@test.TestName</td>
+                                        <td>@test.NormalRange</td>
+                                        <td>@test.SampleType</td>
+                                        <td>
+                                            <span class="badge @(test.TestStatus == "Pending" ? "bg-warning" : "bg-success")">@test.TestStatus</span>
+                                        </td>
+                                        <td>@test.Date.ToShortDateString()</td>
+                                        <td>
+                                            @if (test.TestStatus == "Pending")
+                                            {
+                                                <a href="@Url.Action("EditTestResult", new { testId = test.TestId, patientId = test.PatientId })" class="btn btn-sm btn-primary">Enter Results</a>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">No pending tests found for this patient.</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

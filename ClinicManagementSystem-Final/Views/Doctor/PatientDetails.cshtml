@@ -1,0 +1,324 @@
+@model ClinicManagementSystem_Final.Models.PatientDetailViewModel
+
+@{
+    ViewData["Title"] = "Patient Details";
+    var medicines = ViewBag.AvailableMedicines as List<ClinicManagementSystem_Final.Models.MedicineViewModel> ?? new List<ClinicManagementSystem_Final.Models.MedicineViewModel>();
+    var labTests = ViewBag.AvailableLabTests as List<ClinicManagementSystem_Final.Models.LabTestViewModel> ?? new List<ClinicManagementSystem_Final.Models.LabTestViewModel>();
+    var appointmentId = ViewBag.AppointmentId as int? ?? 0;
+}
+
+<style>
+    /* Doctor modal and page styling (local) */
+    .doctor-page {
+        background: #f5f7fa;
+        padding: 18px;
+        border-radius: 8px;
+    }
+
+    .doctor-card {
+        background: #fff;
+        padding: 16px;
+        border-radius: 8px;
+        box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+        margin-bottom: 16px;
+    }
+
+    .doctor-table {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+    }
+
+    .doctor-table thead th {
+        background: #eef3f7;
+        font-weight: 600;
+    }
+
+    .btn-doctor {
+        transition: transform .08s ease, box-shadow .12s ease;
+    }
+    .btn-doctor:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(16,24,40,0.08); }
+    .btn-doctor:active { transform: translateY(0); box-shadow: 0 4px 8px rgba(16,24,40,0.10); }
+
+    /* Keep modal footer visible and allow body scrolling */
+    .modal-lg { max-width: 900px; }
+    .modal-body { overflow-y: auto; max-height: calc(100vh - 220px); }
+
+    @@media (max-width: 576px) {
+        .doctor-page { padding: 12px; }
+    }
+</style>
+
+<div class="doctor-page">
+    <div class="doctor-card">
+        <h2>Patient: @Model.Name (@Model.MMRNo)</h2>
+
+        @if (TempData["Error"] != null) { <div class="alert alert-danger">@TempData["Error"]</div> }
+        @if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <dl class="row">
+                    <dt class="col-sm-4">MMR No</dt><dd class="col-sm-8">@Model.MMRNo</dd>
+                    <dt class="col-sm-4">Name</dt><dd class="col-sm-8">@Model.Name</dd>
+                    <dt class="col-sm-4">Gender</dt><dd class="col-sm-8">@Model.Gender</dd>
+                    <dt class="col-sm-4">Age</dt><dd class="col-sm-8">@Model.Age</dd>
+                    <dt class="col-sm-4">DOB</dt><dd class="col-sm-8">@Model.DOB?.ToString("d")</dd>
+                    <dt class="col-sm-4">Phone</dt><dd class="col-sm-8">@Model.Phone</dd>
+                    <dt class="col-sm-4">Blood Group</dt><dd class="col-sm-8">@Model.BloodGroup</dd>
+                    <dt class="col-sm-4">Address</dt><dd class="col-sm-8">@Model.Address</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="doctor-card">
+        <h4>Recent Consultations</h4>
+        @if (Model.Consultations == null || !Model.Consultations.Any())
+        {
+            <p>No recent consultations.</p>
+        }
+        else
+        {
+            <div class="doctor-table">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Doctor</th>
+                            <th>Symptoms</th>
+                            <th>Diagnosis</th>
+                            <th>Prescribed Medicine</th>
+                            <th>Prescribed Lab</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in Model.Consultations)
+                        {
+                            <tr>
+                                <td>@(c.Date?.ToString("g") ?? "-")</td>
+                                <td>@(string.IsNullOrEmpty(c.WhoDoctorName) ? "-" : c.WhoDoctorName)</td>
+                                <td>@(string.IsNullOrEmpty(c.Symptoms) ? "-" : c.Symptoms)</td>
+                                <td>@(string.IsNullOrEmpty(c.Diagnosis) ? "-" : c.Diagnosis)</td>
+                                <td>@(string.IsNullOrEmpty(c.PrescribedMedicine) ? "-" : c.PrescribedMedicine)</td>
+                                <td>@(string.IsNullOrEmpty(c.PrescribedLab) ? "-" : c.PrescribedLab)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <div class="d-flex gap-2 align-items-center mt-2">
+        <button type="button" class="btn btn-primary btn-doctor" data-bs-toggle="modal" data-bs-target="#consultModal">Start Consultation</button>
+        <a asp-action="Index" class="btn btn-secondary btn-doctor">Back to Appointments</a>
+    </div>
+</div>
+
+<!-- Consultation Modal -->
+<div class="modal fade" id="consultModal" tabindex="-1" aria-labelledby="consultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="consultModalLabel">Start Consultation — @Model.Name (@Model.MMRNo)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form id="consultForm" asp-action="StartConsultation" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="PatientId" value="@Model.PatientId" />
+                    <input type="hidden" name="MMRNo" value="@Model.MMRNo" />
+                    <input type="hidden" id="PrescribedMedicine" name="PrescribedMedicine" />
+                    <input type="hidden" id="PrescribedLab" name="PrescribedLab" />
+                    <input type="hidden" id="AppointmentId" name="AppointmentId" value="@appointmentId" />
+
+                    <div class="mb-3">
+                        <label for="Symptoms" class="form-label">Symptoms</label>
+                        <textarea id="Symptoms" name="Symptoms" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="Diagnosis" class="form-label">Diagnosis</label>
+                        <textarea id="Diagnosis" name="Diagnosis" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <h5>Prescribe Medicines</h5>
+                    <table class="table table-sm" id="medTable">
+                        <thead>
+                            <tr>
+                                <th>Medicine</th>
+                                <th style="width:90px">Qty</th>
+                                <th style="width:140px">Frequency</th>
+                                <th style="width:90px">Days</th>
+                                <th style="width:80px"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="med-row">
+                                <td>
+                                    <select class="form-select med-select">
+                                        <option value="">-- select medicine --</option>
+                                        @foreach (var m in medicines)
+                                        {
+                                            <option value="@m.MedicineId" data-qty="@m.Quantity" data-name="@m.MedicineName">@m.MedicineName (@m.Quantity available)</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" min="1" class="form-control med-qty small-input" value="1" />
+                                </td>
+                                <td>
+                                    <select class="form-select med-freq small-input">
+                                        <option value="1-0-0">1-0-0</option>
+                                        <option value="0-1-0">0-1-0</option>
+                                        <option value="0-0-1">0-0-1</option>
+                                        <option value="1-0-1">1-0-1</option>
+                                        <option value="1-1-0">1-1-0</option>
+                                        <option value="1-1-1">1-1-1</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" min="0" class="form-control med-days small-input" value="0" />
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-danger remove-med">Remove</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="mb-3">
+                        <button type="button" id="addMedBtn" class="btn btn-sm btn-outline-primary">Add Medicine</button>
+                    </div>
+
+                    <h5>Prescribe Lab Tests</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Lab Tests (select one or more)</label>
+                        <select id="labSelect" class="form-select" multiple>
+                            @foreach (var t in labTests)
+                            {
+                                <option value="@t.TestId" data-name="@t.TestName">@t.TestName</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="DoctorNotes" class="form-label">Doctor Notes</label>
+                        <textarea id="DoctorNotes" name="DoctorNotes" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <div class="me-auto text-muted small">Frequency examples: 1-0-0 (morning), 0-1-0 (noon), 0-0-1 (night), 1-1-1 (all).</div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" id="saveConsultBtn" class="btn btn-primary">Save Consultation</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var medTable = document.getElementById('medTable').getElementsByTagName('tbody')[0];
+            var addMedBtn = document.getElementById('addMedBtn');
+
+            function bindRowEvents(row) {
+                var select = row.querySelector('.med-select');
+                var qty = row.querySelector('.med-qty');
+                var freq = row.querySelector('.med-freq');
+                var days = row.querySelector('.med-days');
+                var remove = row.querySelector('.remove-med');
+
+                select.addEventListener('change', function () {
+                    var option = select.options[select.selectedIndex];
+                    var stock = option ? parseInt(option.getAttribute('data-qty') || '0') : 0;
+                    if (stock > 0) {
+                        qty.max = stock;
+                        if (parseInt(qty.value) > stock) qty.value = stock;
+                    } else {
+                        qty.removeAttribute('max');
+                    }
+                });
+
+                remove.addEventListener('click', function () {
+                    if (medTable.rows.length > 1) {
+                        row.remove();
+                    } else {
+                        select.selectedIndex = 0;
+                        qty.value = 1;
+                        freq.selectedIndex = 0;
+                        days.value = 0;
+                        qty.removeAttribute('max');
+                    }
+                });
+
+                // initialize
+                select.dispatchEvent(new Event('change'));
+            }
+
+            addMedBtn.addEventListener('click', function () {
+                var firstRow = medTable.querySelector('.med-row');
+                var newRow = firstRow.cloneNode(true);
+
+                newRow.querySelector('.med-select').selectedIndex = 0;
+                newRow.querySelector('.med-qty').value = 1;
+                newRow.querySelector('.med-freq').selectedIndex = 0;
+                newRow.querySelector('.med-days').value = 0;
+                newRow.querySelector('.med-qty').removeAttribute('max');
+
+                medTable.appendChild(newRow);
+                bindRowEvents(newRow);
+            });
+
+            var existingRow = medTable.querySelector('.med-row');
+            if (existingRow) bindRowEvents(existingRow);
+
+            var consultForm = document.getElementById('consultForm');
+            consultForm.addEventListener('submit', function (e) {
+                var medRows = medTable.querySelectorAll('.med-row');
+                var medEntries = [];
+                for (var i = 0; i < medRows.length; i++) {
+                    var sel = medRows[i].querySelector('.med-select');
+                    var qty = medRows[i].querySelector('.med-qty');
+                    var freq = medRows[i].querySelector('.med-freq');
+                    var days = medRows[i].querySelector('.med-days');
+                    if (!sel) continue;
+                    var medId = sel.value;
+                    if (!medId) continue;
+                    var opt = sel.options[sel.selectedIndex];
+                    var stock = parseInt(opt.getAttribute('data-qty') || '0');
+                    var q = parseInt(qty.value || '0');
+                    var f = freq.value || '1-0-0';
+                    var d = parseInt(days.value || '0');
+                    if (q <= 0) { alert('Quantity must be at least 1.'); e.preventDefault(); return false; }
+                    if (stock > 0 && q > stock) { alert('Requested quantity for ' + opt.getAttribute('data-name') + ' exceeds available stock (' + stock + ').'); e.preventDefault(); return false; }
+                    // structured: MedicineId:Qty:Frequency:DurationDays
+                    medEntries.push(medId + ':' + q + ':' + f + ':' + d);
+                }
+
+                var labSelect = document.getElementById('labSelect');
+                var labEntries = [];
+                for (var j = 0; j < labSelect.options.length; j++) {
+                    var o = labSelect.options[j];
+                    if (o.selected) labEntries.push(o.getAttribute('data-name'));
+                }
+
+                document.getElementById('PrescribedMedicine').value = medEntries.join(',');
+                document.getElementById('PrescribedLab').value = labEntries.join(',');
+
+                // allow submit
+            });
+
+            var openFlag = '@(TempData["OpenConsultModal"] != null ? "1" : "")';
+            if (openFlag === "1") {
+                var consultModalEl = document.getElementById('consultModal');
+                if (consultModalEl) {
+                    var modal = new bootstrap.Modal(consultModalEl);
+                    modal.show();
+                }
+            }
+        })();
+    </script>
+}

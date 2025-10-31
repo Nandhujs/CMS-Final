@@ -1,0 +1,128 @@
+@model ClinicManagementSystem_Final.Models.LabResultViewModel
+@{
+    ViewData["Title"] = "Enter Lab Results";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h3 class="card-title mb-0">Enter Lab Test Results</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-controller="LabTechnician" asp-action="EditTestResult" method="post">
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.ResultId)
+                        @Html.HiddenFor(m => m.TestId)
+                        @Html.HiddenFor(m => m.PatientId)
+                        @Html.HiddenFor(m => m.TestName)
+                        @Html.HiddenFor(m => m.PatientName)
+                        @Html.HiddenFor(m => m.MMRNo)
+                        @Html.HiddenFor(m => m.NormalRange)
+                        @Html.HiddenFor(m => m.SampleType)
+                        @Html.HiddenFor(m => m.Gender)
+                        @Html.HiddenFor(m => m.Age)
+                        @Html.HiddenFor(m => m.Date)
+                        @Html.HiddenFor(m => m.LowRange)
+                        @Html.HiddenFor(m => m.HighRange)
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Patient:</strong> @Model.PatientName (@Model.MMRNo)
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Test:</strong> @Model.TestName
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Normal Range:</label>
+                            <input type="text" class="form-control" value="@Model.NormalRange" readonly />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ActualValue" class="form-label">Actual Value *</label>
+                            <input asp-for="ActualValue" class="form-control" step="0.01" required />
+                            <small class="form-text text-muted">Enter the test result value</small>
+                            <span asp-validation-for="ActualValue" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Remarks" class="form-label">Remarks</label>
+                            <textarea asp-for="Remarks" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-file-medical"></i> Generate Report
+                            </button>
+                            <a href="@Url.Action("Index")" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function validateForm() {
+            console.log('validateForm called');
+            
+            const actualValue = document.querySelector('[name="ActualValue"]').value;
+            console.log('Actual Value:', actualValue);
+            
+            if (!actualValue || actualValue.trim() === '') {
+                console.log('Actual Value is empty, preventing submission');
+                alert('Please enter the actual test value before generating the report.');
+                return false;
+            }
+            
+            // Check if it's a valid number
+            const numValue = parseFloat(actualValue);
+            if (isNaN(numValue)) {
+                console.log('Actual Value is not a valid number');
+                alert('Please enter a valid number for the actual test value.');
+                return false;
+            }
+            
+            console.log('Form validation passed, submitting...');
+            
+            // Show loading state
+            const submitBtn = document.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating Report...';
+                submitBtn.disabled = true;
+            }
+            
+            return true;
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, setting up form...');
+            
+            const form = document.querySelector('form');
+            if (form) {
+                console.log('Form found:', form);
+                
+                form.addEventListener('submit', function(e) {
+                    console.log('Form submit event triggered');
+                    
+                    if (!validateForm()) {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+            } else {
+                console.error('Form not found!');
+            }
+        });
+    </script>
+}
+

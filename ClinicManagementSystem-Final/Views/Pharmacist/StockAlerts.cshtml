@@ -1,0 +1,52 @@
+@model IEnumerable<ClinicManagementSystem_Final.Models.Medicine>
+@{
+    ViewData["Title"] = "Stock Alerts";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h3 class="card-title mb-0">Low Stock Alerts</h3>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Medicines with quantity less than or equal to 10 units.</p>
+
+                    @if (Model != null && Model.Any())
+                    {
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Medicine Name</th>
+                                    <th>Description</th>
+                                    <th>Current Quantity</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var medicine in Model)
+                                {
+                                    <tr>
+                                        <td>@medicine.MedicineName</td>
+                                        <td>@medicine.MedicineDescription</td>
+                                        <td>
+                                            <span class="badge bg-danger">@medicine.Quantity</span>
+                                        </td>
+                                        <td>@medicine.Price.ToString("C")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="alert alert-success">All medicines are in stock!</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

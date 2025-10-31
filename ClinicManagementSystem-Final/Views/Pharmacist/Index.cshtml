@@ -1,0 +1,50 @@
+@{
+    ViewData["Title"] = "Pharmacist Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header text-white" style="background: linear-gradient(135deg, var(--teal-primary) 0%, var(--teal-dark) 100%);">
+                    <h3 class="card-title mb-0">💊 Pharmacist Dashboard</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card text-white mb-3" style="background: linear-gradient(135deg, var(--teal-primary) 0%, var(--teal-light) 100%);">
+                                <div class="card-body">
+                                    <h5 class="card-title">📋 Pending Prescriptions</h5>
+                                    <p class="card-text">Review and dispense prescriptions</p>
+                                    <a href="@Url.Action("PendingPrescriptions")" class="btn btn-light">View Pending</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-white mb-3" style="background: linear-gradient(135deg, var(--teal-primary) 0%, var(--teal-light) 100%);">
+                                <div class="card-body">
+                                    <h5 class="card-title">💊 Medicine Inventory</h5>
+                                    <p class="card-text">Manage medicines</p>
+                                    <a href="@Url.Action("Medicines")" class="btn btn-light">View Medicines</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-white mb-3" style="background: linear-gradient(135deg, var(--teal-primary) 0%, var(--teal-light) 100%);">
+                                <div class="card-body">
+                                    <h5 class="card-title">⚠️ Stock Alerts</h5>
+                                    <p class="card-text">Check low stock medicines</p>
+                                    <a href="@Url.Action("StockAlerts")" class="btn btn-light">View Alerts</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

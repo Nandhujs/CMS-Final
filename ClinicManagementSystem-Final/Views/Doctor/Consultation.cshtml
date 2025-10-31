@@ -1,0 +1,67 @@
+@model ClinicManagementSystem_Final.Models.ConsultationViewModel
+
+@{
+    ViewData["Title"] = "Consultation";
+}
+
+<h2>Consultation — @Model.PatientName (@Model.MMRNo)</h2>
+
+@if (TempData["Error"] != null) {
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null) {
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<dl class="row mb-3">
+    <dt class="col-sm-3">Token</dt><dd class="col-sm-9">@Model.TokenNumber</dd>
+    <dt class="col-sm-3">Appointment</dt><dd class="col-sm-9">@Model.AppointmentDate.ToString("g")</dd>
+    <dt class="col-sm-3">Age / Gender</dt><dd class="col-sm-9">@((Model.Age ?? 0) + " / " + Model.Gender)</dd>
+</dl>
+
+@if (Model.ExistingDiagnosis != null)
+{
+    <h4>Existing Diagnosis</h4>
+    <div class="border p-2 mb-3">
+        <p><strong>Date:</strong> @Model.ExistingDiagnosis.Date?.ToString("g")</p>
+        <p><strong>Symptoms:</strong> @Model.ExistingDiagnosis.Symptoms</p>
+        <p><strong>Diagnosis:</strong> @Model.ExistingDiagnosis.Diagnosis</p>
+        <p><strong>Prescribed Medicine:</strong> @Model.ExistingDiagnosis.PrescribedMedicine</p>
+        <p><strong>Prescribed Lab:</strong> @Model.ExistingDiagnosis.PrescribedLab</p>
+        <p><strong>Doctor Notes:</strong> @Model.ExistingDiagnosis.DoctorNotes</p>
+    </div>
+}
+
+<form asp-action="StartConsultation" method="post">
+    <input type="hidden" name="AppointmentId" value="@Model.AppointmentId" />
+    <input type="hidden" name="PatientId" value="@Model.PatientId" />
+    <input type="hidden" name="MMRNo" value="@Model.MMRNo" />
+
+    <div class="mb-3">
+        <label>Symptoms</label>
+        <textarea name="Symptoms" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label>Diagnosis</label>
+        <textarea name="Diagnosis" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label>Prescribed Medicine</label>
+        <input name="PrescribedMedicine" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Prescribed Lab Tests</label>
+        <input name="PrescribedLab" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Doctor Notes</label>
+        <textarea name="DoctorNotes" class="form-control" rows="2"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Consultation</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>

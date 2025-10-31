@@ -1,0 +1,203 @@
+@model ClinicManagementSystem_Final.Models.AppointmentBillViewModel
+
+@{
+    ViewData["Title"] = "Appointment Bill";
+}
+
+<style>
+    .bill-container {
+        max-width: 600px;
+        margin: 20px auto;
+        background: white;
+        padding: 30px;
+        border: 2px solid #ddd;
+        font-family: 'Arial', sans-serif;
+    }
+    
+    .bill-header {
+        text-align: center;
+        border-bottom: 3px solid #007bff;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .bill-title {
+        font-size: 28px;
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 10px;
+    }
+    
+    .bill-date {
+        color: #666;
+        font-size: 14px;
+    }
+    
+    .bill-section {
+        margin-bottom: 20px;
+    }
+    
+    .section-title {
+        font-weight: bold;
+        color: #333;
+        font-size: 16px;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+    }
+    
+    .bill-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px dotted #ddd;
+    }
+    
+    .bill-row:last-child {
+        border-bottom: none;
+    }
+    
+    .bill-label {
+        font-weight: 600;
+        color: #555;
+    }
+    
+    .bill-value {
+        color: #333;
+    }
+    
+    .token-box {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        margin: 20px 0;
+    }
+    
+    .token-label {
+        font-size: 14px;
+        opacity: 0.9;
+    }
+    
+    .token-number {
+        font-size: 48px;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+    
+    .fee-total {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 20px;
+    }
+    
+    .total-amount {
+        font-size: 20px;
+        font-weight: bold;
+        color: #28a745;
+    }
+    
+    @@media print {
+        .no-print {
+            display: none;
+        }
+        
+        .bill-container {
+            border: none;
+            box-shadow: none;
+        }
+    }
+</style>
+
+<div class="bill-container">
+    <div class="bill-header">
+        <div class="bill-title">Consultation Bill</div>
+        <div class="bill-date">Date: @DateTime.Now.ToString("dd/MM/yyyy hh:mm tt")</div>
+    </div>
+
+    <!-- Token Number -->
+    <div class="token-box">
+        <div class="token-label">Your Token Number</div>
+        <div class="token-number">@Model.TokenNumber</div>
+        <div style="font-size: 12px; opacity: 0.9;">Please note this token number for your appointment</div>
+    </div>
+
+    <!-- Patient Details -->
+    <div class="bill-section">
+        <div class="section-title">Patient Details</div>
+        <div class="bill-row">
+            <span class="bill-label">Name:</span>
+            <span class="bill-value">@Model.PatientName</span>
+        </div>
+        <div class="bill-row">
+            <span class="bill-label">MMR No:</span>
+            <span class="bill-value">@Model.MMRNo</span>
+        </div>
+        <div class="bill-row">
+            <span class="bill-label">Gender:</span>
+            <span class="bill-value">@Model.Gender</span>
+        </div>
+        <div class="bill-row">
+            <span class="bill-label">Age:</span>
+            <span class="bill-value">@Model.Age years</span>
+        </div>
+    </div>
+
+    <!-- Appointment Details -->
+    <div class="bill-section">
+        <div class="section-title">Appointment Details</div>
+        <div class="bill-row">
+            <span class="bill-label">Doctor:</span>
+            <span class="bill-value">@Model.DoctorName</span>
+        </div>
+        <div class="bill-row">
+            <span class="bill-label">Specialization:</span>
+            <span class="bill-value">@Model.Specialization</span>
+        </div>
+        <div class="bill-row">
+            <span class="bill-label">Appointment Date:</span>
+            <span class="bill-value">@Model.AppointmentDate.ToString("dd/MM/yyyy")</span>
+        </div>
+        <div class="bill-row">
+            <span class="bill-label">Time Slot:</span>
+            <span class="bill-value">@Model.AppointmentDate.ToString("hh:mm tt")</span>
+        </div>
+    </div>
+
+    <!-- Fee Details -->
+    <div class="bill-section">
+        <div class="section-title">Fee Details</div>
+        <div class="bill-row">
+            <span class="bill-label">Consultation Fee:</span>
+            <span class="bill-value">₹@Model.ConsultationFee.ToString("F2")</span>
+        </div>
+    </div>
+
+    <!-- Total -->
+    <div class="fee-total">
+        <div class="bill-row">
+            <span class="bill-label">Total Amount:</span>
+            <span class="total-amount">₹@Model.ConsultationFee.ToString("F2")</span>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #eee;">
+        <p style="color: #666; font-size: 12px;">
+            Please arrive 10 minutes before your appointment time.<br>
+            For any queries, contact the reception desk.
+        </p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="text-center mt-4 no-print">
+        <button onclick="window.print()" class="btn btn-primary me-2">
+            <i class="bi bi-printer"></i> Print Bill
+        </button>
+        <a href="@Url.Action("TodayAppointments")" class="btn btn-success">
+            <i class="bi bi-check-circle"></i> Done
+        </a>
+    </div>
+</div>
